@@ -14,7 +14,7 @@ func AzureBillTrans() {
 			zhlog.Error("AzureBillTrans", "%s", e.(error).Error())
 		}
 	}()
-	InitCsvToDbByMonth(88)
-	TransMasterByMonth(88)
-	TransTagByMonth(88)
+	InitCsvToDbByMonth(121)
+	TransMasterByMonth(121)
+	TransTagByMonth(121)
 }

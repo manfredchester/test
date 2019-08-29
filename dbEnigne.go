@@ -42,7 +42,7 @@ func GetEngine() (*xorm.Engine, error) {
 
 func mysqlEngine() (*xorm.Engine, error) {
 	Host := protoConfig.CMysqlHost()
-	Host = "10.128.0.180"
+	Host = "10.0.0.4"
 	Port := "3306"
 	Name := "cloudproject"
 	User := "root"
