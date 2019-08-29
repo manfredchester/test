@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	protoConfig "protocol/config"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
@@ -41,7 +40,6 @@ func GetEngine() (*xorm.Engine, error) {
 }
 
 func mysqlEngine() (*xorm.Engine, error) {
-	Host := protoConfig.CMysqlHost()
 	Host = "10.0.0.4"
 	Port := "3306"
 	Name := "cloudproject"

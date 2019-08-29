@@ -137,7 +137,7 @@ func TransMasterByMonth(accountID int) {
 		var dataTo []azureType.BillAzureDetailReportMetadata
 		var transData []azureType.BillCloudMaster
 		// err = session.Where("bill_account_uuid=?", accountID).And("deleted=0").And("billing_cycle=?", curMonth).OrderBy("date").Limit(common.DefaultRowsLimit, common.DefaultRowsLimit*i).Find(&dataTo)
-		err = orm.Where("bill_account_uuid=?", accountID).And("deleted=0").OrderBy("item_uuid").Limit(common.DefaultRowsLimit, common.DefaultRowsLimit*i).Find(&dataTo)
+		err = orm.Where("bill_account_uuid=?", accountID).And("deleted=0").OrderBy("uuid").Limit(common.DefaultRowsLimit, common.DefaultRowsLimit*i).Find(&dataTo)
 		zhlog.Error("Begin", "%s", err.Error())
 
 		for _, v := range dataTo {
