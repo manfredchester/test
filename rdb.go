@@ -1,16 +1,15 @@
 package main
 
 import (
-	"api-service-platform/types/azureType"
-	"api-service-platform/util/cloudBillUtil"
-	"api-service-platform/zhlog"
 	"encoding/csv"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"strings"
+	"test/azureType"
 	"test/common"
+	"test/zhlog"
 	"time"
 )
 
@@ -56,7 +55,7 @@ func InitCsvToDbByMonth(accountID int) {
 	zhlog.Log("InitCsvToDbByMonth_times:", "GetLoops(len(data))：%d", GetLoops(len(data)))
 
 	var affectedAll int64
-	for t := 0; t < cloudBillUtil.GetLoops(len(data)); t++ {
+	for t := 0; t < GetLoops(len(data)); t++ {
 		// for t := 0; t < 2; t++ {
 		var ssd []azureType.BillAzureDetailReportMetadata
 		for i := t * common.MAXINSERTNUM; i < (t+1)*common.MAXINSERTNUM; i++ {
