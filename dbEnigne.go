@@ -40,7 +40,7 @@ func GetEngine() (*xorm.Engine, error) {
 }
 
 func mysqlEngine() (*xorm.Engine, error) {
-	Host = "10.0.0.4"
+	Host := "10.0.0.4"
 	Port := "3306"
 	Name := "cloudproject"
 	User := "root"
