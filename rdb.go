@@ -32,6 +32,8 @@ func ReadCsv(filename string) [][]string {
 }
 
 func InitCsvToDbByMonth(accountID int) {
+	zhlog.Log("BillAccountUuid", "BillAccountUuid: %+v", accountID)
+
 	orm := CloudprojectEngine()
 	orm.ShowSQL(false)
 	// session := orm.NewSession()
@@ -39,7 +41,7 @@ func InitCsvToDbByMonth(accountID int) {
 	// err := session.Begin()
 	// zhlog.Assert(err)
 
-	v := fmt.Sprintf("dataCsv/process.csv")
+	v := fmt.Sprintf("dataCsv/221-20180101~20190630.csv")
 	zhlog.Log("InitCsvToDbByMonth_files", "files: %s", v)
 
 	data := ReadCsv(v)
@@ -145,7 +147,7 @@ func TransMasterByMonth(accountID int) {
 				ItemUuid:        v.Uuid,
 				BillAccountUuid: v.BillAccountUuid,
 				CloudType:       "azure",
-				AccountId:       "V5701903S0105",
+				AccountId:       "V5701903S0221",
 				BillingCycle:    v.BillingCycle,
 
 				Date:             v.Date,
@@ -211,7 +213,7 @@ func TransTagByMonth(accountID int) {
 				jMap := make(map[string]interface{}, 0)
 				err := json.Unmarshal([]byte(v.Tags), &jMap)
 				zhlog.Error("json", "%s", err.Error())
-				transTag = Analy(jMap, v.ItemUuid, v.BillAccountUuid, v.BillingCycle, v.AccountId)
+				transTag = append(transTag, Analy(jMap, v.ItemUuid, v.BillAccountUuid, v.BillingCycle, v.AccountId)...)
 			}
 			if v.SubscriptionGuid != "" {
 				transTag = append(transTag, azureType.BillCloudTag{
