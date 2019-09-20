@@ -81,8 +81,8 @@ func InitCsvToDbByMonth(accountID, fileName string) (interrupt bool) {
 func TransMasterByMonth(accountID, cldType, cldID string) (interrupt bool) {
 	var data azureType.BillAzureDetailReportMetadata
 	num, err := orm.Where("bill_account_uuid=?", accountID).And("deleted=0").Count(data)
-	zhlog.Assert(err)
 	zhlog.Log("TransMasterByMonth", "TransMasterByMonth_num: %d", num)
+	zhlog.Assert(err)
 
 	times := num / common.DefaultRowsLimit
 	if num%common.DefaultRowsLimit != 0 {
@@ -220,11 +220,10 @@ func TransTagByMonth(accountID string) {
 			}
 		}
 
-		// affected, err := session.Insert(&transTag)
 		affected, err := orm.Insert(&transTag)
 		affectedAll = affectedAll + affected
 		if zhlog.IsNotNil(err) {
-			zhlog.Error("InitCsvToDbByMonth_Insert", "%d至%d发生错误: %v ", i*common.DefaultRowsLimitTAG, (i+1)*common.DefaultRowsLimitTAG, err)
+			zhlog.Error("TransTagByMonth_affected", "%d至%d发生错误: %v ", i*common.DefaultRowsLimitTAG, (i+1)*common.DefaultRowsLimitTAG, err)
 		}
 	}
 	zhlog.Log("TransTagByMonth", "TransTagByMonth_affected: %d \n ---------------------TransTagByMonth-------------end-------------------", affectedAll)
