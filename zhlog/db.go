@@ -1,9 +1,7 @@
 package zhlog
 
 import (
-	"strconv"
-
-	protoConfig "protocol/config"
+	"fmt"
 
 	"github.com/go-xorm/xorm"
 )
@@ -25,11 +23,12 @@ func cloudProjectEngine() *xorm.Engine {
 }
 
 func mysqlEngine() (*xorm.Engine, error) {
-	Host := protoConfig.CMysqlHost()
-	Port := uint16(protoConfig.CMysqlPort())
-	Name := protoConfig.CCloudMysqlDatabase()
-	User := protoConfig.CMysqlUserName()
-	Password := protoConfig.CMysqlPasswd()
-	dburl := User + ":" + Password + "@tcp(" + Host + ":" + strconv.Itoa(int(Port)) + ")/" + Name + "?charset=utf8"
+	Host := "10.0.0.4"
+	Port := "3306"
+	Name := "cloudproject"
+	User := "root"
+	Password := "Connext@0101"
+	dburl := User + ":" + Password + "@tcp(" + Host + ":" + Port + ")/" + Name + "?charset=utf8"
+	fmt.Println("dburl:", dburl)
 	return xorm.NewEngine("mysql", dburl)
 }

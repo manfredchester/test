@@ -1,53 +1,23 @@
 package main
 
 import (
-	"encoding/csv"
 	"encoding/json"
-	"fmt"
-	"os"
 	"test/azureType"
 	"test/common"
 	"test/zhlog"
 	"time"
 )
 
-func GetLoops(len int) (times int) {
-	times = len / common.MAXINSERTNUM
-	if len%common.MAXINSERTNUM != 0 {
-		times++
-	}
-	return
-}
-
-func ReadCsv(filename string) [][]string {
-	f, err := os.Open(filename)
-	zhlog.Assert(err)
-	r := csv.NewReader(f)
-	r.LazyQuotes = true
-	r.FieldsPerRecord = -1
-	rows, err := r.ReadAll()
-	f.Close()
-	zhlog.Assert(err)
-	return rows
-}
-
-func InitCsvToDbByMonth(accountID int) {
+func InitCsvToDbByMonth(accountID, fileName string) (interrupt bool) {
 	zhlog.Log("BillAccountUuid", "BillAccountUuid: %+v", accountID)
 
-	orm := CloudprojectEngine()
-	orm.ShowSQL(false)
-	// session := orm.NewSession()
-	// defer session.Close()
-	// err := session.Begin()
-	// zhlog.Assert(err)
-
-	v := fmt.Sprintf("dataCsv/221-20180101~20190630.csv")
-	zhlog.Log("InitCsvToDbByMonth_files", "files: %s", v)
-
-	data := ReadCsv(v)
+	zhlog.Log("InitCsvToDbByMonth_files", "files: %s", fileName)
+	data := ReadCsv(fileName)
 	zhlog.Log("InitCsvToDbByMonth_num", "len(data)：%d", len(data))
 	zhlog.Log("InitCsvToDbByMonth_times", "GetLoops(len(data))：%d", GetLoops(len(data)))
 
+	orm := CloudprojectEngine()
+	orm.ShowSQL(false)
 	var affectedAll int64
 	for t := 0; t < GetLoops(len(data)); t++ {
 		var ssd []azureType.BillAzureDetailReportMetadata
@@ -97,34 +67,20 @@ func InitCsvToDbByMonth(accountID int) {
 				UpdateTime: time.Now(),
 			})
 		}
-		// affected, err := session.Insert(&ssd)
 		affected, err := orm.Insert(&ssd)
 		affectedAll = affectedAll + affected
 		if err != nil {
-			// session.Rollback()
-			zhlog.Error("InitCsvToDbByMonth_Insert", "%d至%d发生错误:", t*common.MAXINSERTNUM, (t+1)*common.MAXINSERTNUM)
+			zhlog.Error("InitCsvToDbByMonth_Insert", "%d至%d发生错误: %v", t*common.MAXINSERTNUM, (t+1)*common.MAXINSERTNUM, err)
+			interrupt = true
 		}
-		// session.Commit()
 	}
-	zhlog.Log("InitCsvToDbByMonth", "InitCsvToDbByMonth_affected: %d", affectedAll)
-	fmt.Println("---------------------InitCsvToDbByMonth-------------end-------------------")
+	zhlog.Log("InitCsvToDbByMonth", "InitCsvToDbByMonth_affected: %d \n ---------------------InitCsvToDbByMonth-------------end-------------------", affectedAll)
+	return
 }
 
-func TransMasterByMonth(accountID int) {
-	orm := CloudprojectEngine()
-	orm.ShowSQL(false)
-	// session := orm.NewSession()
-	// defer session.Close()
-	// err := session.Begin()
-	// zhlog.Assert(err)
-
-	// accountCloudID, err := GetAccountCloudId(session, accountID)
-	// zhlog.Assert(err)
-
+func TransMasterByMonth(accountID, cldType, cldID string) (interrupt bool) {
 	var data azureType.BillAzureDetailReportMetadata
 	num, err := orm.Where("bill_account_uuid=?", accountID).And("deleted=0").Count(data)
-	// num, err := session.Where("bill_account_uuid=?", accountID).And("deleted=0").And("billing_cycle=?", curMonth).Count(data)
-
 	zhlog.Assert(err)
 	zhlog.Log("TransMasterByMonth", "TransMasterByMonth_num: %d", num)
 
@@ -134,20 +90,22 @@ func TransMasterByMonth(accountID int) {
 	}
 	zhlog.Log("TransMasterByMonth", "TransMasterByMonth_times: %d", times)
 
+	orm := CloudprojectEngine()
+	orm.ShowSQL(false)
 	var affectedAll int64
 	for i := 0; i < int(times); i++ {
-		var dataTo []azureType.BillAzureDetailReportMetadata
-		var transData []azureType.BillCloudMaster
-		// err = session.Where("bill_account_uuid=?", accountID).And("deleted=0").And("billing_cycle=?", curMonth).OrderBy("date").Limit(common.DefaultRowsLimit, common.DefaultRowsLimit*i).Find(&dataTo)
-		err = orm.Where("bill_account_uuid=?", accountID).And("deleted=0").OrderBy("uuid").Limit(common.DefaultRowsLimit, common.DefaultRowsLimit*i).Find(&dataTo)
-		zhlog.Error("Begin", "%s", err.Error())
+		dataTo := make([]azureType.BillAzureDetailReportMetadata, 0)
+		transData := make([]azureType.BillCloudMaster, 0)
+		zhlog.Log("Master执行状态", "Master执行数据 %+v Master开始值：%+v", common.DefaultRowsLimit, common.DefaultRowsLimit*i)
+		err = orm.Where("bill_account_uuid=?", accountID).And("deleted=0").Limit(common.DefaultRowsLimit, common.DefaultRowsLimit*i).Find(&dataTo)
+		zhlog.Assert(err)
 
 		for _, v := range dataTo {
 			transData = append(transData, azureType.BillCloudMaster{
 				ItemUuid:        v.Uuid,
 				BillAccountUuid: v.BillAccountUuid,
-				CloudType:       "azure",
-				AccountId:       "V5701904S0221",
+				CloudType:       cldType,
+				AccountId:       cldID,
 				BillingCycle:    v.BillingCycle,
 
 				Date:             v.Date,
@@ -169,28 +127,17 @@ func TransMasterByMonth(accountID int) {
 		affected, err := orm.Insert(&transData)
 		affectedAll = affectedAll + affected
 		if zhlog.IsNotNil(err) {
-			// session.Rollback()
-			zhlog.Error("InitCsvToDbByMonth_Insert", "%d至%d发生错误:", i*common.DefaultRowsLimit, (i+1)*common.DefaultRowsLimit)
+			zhlog.Error("TransMasterByMonth_Insert", "%d至%d发生错误: %v", i*common.DefaultRowsLimit, (i+1)*common.DefaultRowsLimit, err)
+			interrupt = true
 		}
-		// session.Commit()
-
 	}
-	zhlog.Log("TransMasterByMonth", "TransMasterByMonth_affected: %d", affectedAll)
-	fmt.Println("---------------------TransMasterByMonth-------------end-------------------")
+	zhlog.Log("TransMasterByMonth", "TransMasterByMonth_affected: %d \n---------------------TransMasterByMonth-------------end-------------------", affectedAll)
+	return
 }
 
-func TransTagByMonth(accountID int) {
-	orm := CloudprojectEngine()
-	orm.ShowSQL(false)
-	// session := orm.NewSession()
-	// defer session.Close()
-	// err := session.Begin()
-	// zhlog.Assert(err)
-
+func TransTagByMonth(accountID string) {
 	var master azureType.BillCloudMaster
-	// num, err := session.Where("bill_account_uuid=?", accountID).And("billing_cycle=?", curMonth).And("deleted=0").Count(master)
 	num, err := orm.Where("bill_account_uuid=?", accountID).And("deleted=0").Count(master)
-
 	zhlog.Log("TransTagByMonth", "TransTagByMonth_num: %d", num)
 	zhlog.Assert(err)
 
@@ -200,19 +147,21 @@ func TransTagByMonth(accountID int) {
 	}
 	zhlog.Log("TransTagByMonth", "TransTagByMonth_times: %d", times)
 
+	orm := CloudprojectEngine()
+	orm.ShowSQL(false)
 	var affectedAll int64
 	for i := 0; i < int(times); i++ {
-		var masterTo []azureType.BillCloudMaster
-		var transTag []azureType.BillCloudTag
-		// err = session.Where("bill_account_uuid=?", accountID).And("billing_cycle=?", curMonth).And("deleted=0").OrderBy("date").Limit(common.DefaultRowsLimitTAG, common.DefaultRowsLimitTAG*i).Find(&masterTo)
+		masterTo := make([]azureType.BillCloudMaster, 0)
+		transTag := make([]azureType.BillCloudTag, 0)
+		zhlog.Log("TAG执行状态", "TAG执行数据 %+v TAG开始值：%+v", common.DefaultRowsLimit, common.DefaultRowsLimit*i)
 		err = orm.Where("bill_account_uuid=?", accountID).And("deleted=0").OrderBy("item_uuid").Limit(common.DefaultRowsLimitTAG, common.DefaultRowsLimitTAG*i).Find(&masterTo)
-		zhlog.Error("Begin", "%s", err.Error())
+		zhlog.Assert(err)
 
 		for _, v := range masterTo {
 			if v.Tags != "" {
 				jMap := make(map[string]interface{}, 0)
 				err := json.Unmarshal([]byte(v.Tags), &jMap)
-				zhlog.Error("json", "%s", err.Error())
+				zhlog.Assert(err)
 				transTag = append(transTag, Analy(jMap, v.ItemUuid, v.BillAccountUuid, v.BillingCycle, v.AccountId)...)
 			}
 			if v.SubscriptionGuid != "" {
@@ -275,11 +224,8 @@ func TransTagByMonth(accountID int) {
 		affected, err := orm.Insert(&transTag)
 		affectedAll = affectedAll + affected
 		if zhlog.IsNotNil(err) {
-			zhlog.Error("InitCsvToDbByMonth_Insert", "%d至%d发生错误:", i*common.DefaultRowsLimitTAG, (i+1)*common.DefaultRowsLimitTAG)
-			// session.Rollback()
+			zhlog.Error("InitCsvToDbByMonth_Insert", "%d至%d发生错误: %v ", i*common.DefaultRowsLimitTAG, (i+1)*common.DefaultRowsLimitTAG, err)
 		}
-		// session.Commit()
 	}
-	zhlog.Log("TransTagByMonth", "TransTagByMonth_affected: %d", affectedAll)
-	fmt.Println("---------------------TransTagByMonth-------------end-------------------")
+	zhlog.Log("TransTagByMonth", "TransTagByMonth_affected: %d \n ---------------------TransTagByMonth-------------end-------------------", affectedAll)
 }

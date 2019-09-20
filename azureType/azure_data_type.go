@@ -89,7 +89,7 @@ type BillAzureCpp struct {
 type BillCloudMaster struct {
 	ItemUuid string
 
-	BillAccountUuid int
+	BillAccountUuid string
 	CloudType       string
 	AccountId       string
 	BillingCycle    string
@@ -112,7 +112,7 @@ type BillCloudMaster struct {
 type BillCloudTag struct {
 	Uuid            string
 	ItemUuid        string
-	BillAccountUuid int
+	BillAccountUuid string
 	BillingCycle    string
 	AccountId       string
 	TagKey          string

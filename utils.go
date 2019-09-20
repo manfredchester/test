@@ -1,12 +1,15 @@
 package main
 
 import (
+	"encoding/csv"
+	"os"
 	"test/azureType"
+	"test/common"
 	"test/zhlog"
 	"time"
 )
 
-func Analy(obj interface{}, itemUuid string, billAccountUuid int, billingCycle, accountID string) (transTag []azureType.BillCloudTag) {
+func Analy(obj interface{}, itemUuid, billAccountUuid, billingCycle, accountID string) (transTag []azureType.BillCloudTag) {
 	switch obj.(type) {
 	case map[string]interface{}:
 		for k, v := range obj.(map[string]interface{}) {
@@ -28,4 +31,24 @@ func Analy(obj interface{}, itemUuid string, billAccountUuid int, billingCycle, 
 		zhlog.Log("TagsAnaly", "%s", "ERROR：存在异常数据结构类型，并未清晰入cloud_tag")
 	}
 	return transTag
+}
+
+func GetLoops(len int) (times int) {
+	times = len / common.MAXINSERTNUM
+	if len%common.MAXINSERTNUM != 0 {
+		times++
+	}
+	return
+}
+
+func ReadCsv(filename string) [][]string {
+	f, err := os.Open(filename)
+	zhlog.Assert(err)
+	r := csv.NewReader(f)
+	r.LazyQuotes = true
+	r.FieldsPerRecord = -1
+	rows, err := r.ReadAll()
+	f.Close()
+	zhlog.Assert(err)
+	return rows
 }

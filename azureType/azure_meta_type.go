@@ -88,7 +88,7 @@ const (
 
 type BillAzureDetailReportMetadata struct {
 	Uuid            string
-	BillAccountUuid int
+	BillAccountUuid string
 	BillingCycle    string
 
 	AccountOwnerId         string
