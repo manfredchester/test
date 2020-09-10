@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+func tettt() {
+	panic("sad1")
+}
+
 func Analy(obj interface{}, itemUuid, billAccountUuid, billingCycle, accountID string) (transTag []azureType.BillCloudTag) {
 	switch obj.(type) {
 	case map[string]interface{}:

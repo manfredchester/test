@@ -2,8 +2,6 @@ package azureType
 
 import (
 	"time"
-
-	"pub/request"
 )
 
 // type BillAccountRsp struct {
@@ -46,9 +44,9 @@ import (
 // }
 
 type BillAccountReqDemo struct {
-	AccountInfo AccountInfo                `json:"account_info"`
-	ClientInfo  []ClientInfo               `json:"client_info"`
-	Pagination  *request.RequestPagination `json:"pagination"`
+	AccountInfo AccountInfo  `json:"account_info"`
+	ClientInfo  []ClientInfo `json:"client_info"`
+	// Pagination  *request.RequestPagination `json:"pagination"`
 }
 
 type AccountInfo struct {

@@ -2,8 +2,6 @@ package azureType
 
 import (
 	"time"
-
-	"pub/request"
 )
 
 type InitDataTimeReq struct {
@@ -25,15 +23,15 @@ type BillSyncDetails struct {
 }
 
 type BillCppReq struct {
-	CppId        int                        `json:"cpp_id"`
-	AccountId    int                        `json:"account_id"`
-	CppName      string                     `json:"cpp_name"`
-	ServiceType  string                     `json:"service_type"`
-	StartDate    string                     `json:"start_date"`
-	EndDate      string                     `json:"end_date"`
-	LicenceCount int                        `json:"licence_count"`
-	MonthCost    float64                    `json:"month_cost"`
-	Pagination   *request.RequestPagination `json:"pagination"`
+	CppId        int     `json:"cpp_id"`
+	AccountId    int     `json:"account_id"`
+	CppName      string  `json:"cpp_name"`
+	ServiceType  string  `json:"service_type"`
+	StartDate    string  `json:"start_date"`
+	EndDate      string  `json:"end_date"`
+	LicenceCount int     `json:"licence_count"`
+	MonthCost    float64 `json:"month_cost"`
+	// Pagination   *request.RequestPagination `json:"pagination"`
 }
 
 // cpp订单信息 bill_cpp
@@ -61,15 +59,15 @@ type BillAzureCppReqAll struct {
 }
 
 type BillAzureCppReq struct {
-	Uuid            string                     `json:"uuid"`
-	BillAccountUuid string                     `json:"bill_account_uuid"`
-	AccountName     string                     `json:"account_name"`
-	ServiceType     string                     `json:"service_type"`
-	StartDate       string                     `json:"start_date"`
-	EndDate         string                     `json:"end_date"`
-	LicenceCount    int                        `json:"licence_count"`
-	MonthCost       float64                    `json:"month_cost"`
-	Pagination      *request.RequestPagination `json:"pagination"`
+	Uuid            string  `json:"uuid"`
+	BillAccountUuid string  `json:"bill_account_uuid"`
+	AccountName     string  `json:"account_name"`
+	ServiceType     string  `json:"service_type"`
+	StartDate       string  `json:"start_date"`
+	EndDate         string  `json:"end_date"`
+	LicenceCount    int     `json:"licence_count"`
+	MonthCost       float64 `json:"month_cost"`
+	// Pagination      *request.RequestPagination `json:"pagination"`
 }
 
 type BillAzureCpp struct {
