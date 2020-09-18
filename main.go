@@ -1,6 +1,8 @@
 package main
 
 func main() {
+
+	proc()
 	// interSt()
 	// interIn()
 	// slice_interface()
