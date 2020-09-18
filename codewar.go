@@ -37,3 +37,6 @@ func test() string {
 	tettt()
 	return "sad"
 }
+func tettt() {
+	panic("sad1")
+}
