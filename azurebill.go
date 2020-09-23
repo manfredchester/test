@@ -23,7 +23,6 @@ func AzureBillTrans(cmd Command) {
 			TransTagByMonth(cmd.UUID)
 		}
 	}
-
 }
 
 func Analy(obj interface{}, itemUuid, billAccountUuid, billingCycle, accountID string) (transTag []azureType.BillCloudTag) {
@@ -69,6 +68,7 @@ func ReadCsv(filename string) [][]string {
 	zhlog.Assert(err)
 	return rows
 }
+
 func InitCsvToDbByMonth(accountID, fileName string) (interrupt bool) {
 	zhlog.Log("BillAccountUuid", "BillAccountUuid: %+v", accountID)
 

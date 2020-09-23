@@ -46,7 +46,7 @@ func printAnyValue(args ...interface{}) {
 	}
 }
 
-func ssttrrucctt() {
+func theoryStruct() {
 	var St1 *MyStruct = new(MyStruct)      //创建一个对象指针
 	St1.val = 1111111                      //给对象赋值
 	var St MyStruct = MyStruct{222222222}  //创建一个对象，给对象赋值

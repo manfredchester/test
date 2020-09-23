@@ -1,12 +1,12 @@
 package main
 
 func main() {
-
-	proc()
+	theoryReturn()
+	// theoryRountine()
 	// interSt()
 	// interIn()
 	// slice_interface()
-	// ssttrrucctt()
+	// theoryStruct()
 	// main function: requirment
 	// I hope to Never break down at any time
 	// base1()

@@ -34,7 +34,7 @@ func New(items ...interface{}) (s *Set) {
 	return
 }
 
-func sseett() {
+func theorySet() {
 	// var e Set
 	// Test(&e)
 	// ss := Set{
