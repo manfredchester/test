@@ -27,7 +27,7 @@ func (s *Set) Clear() {
 	s.m = make(map[interface{}]struct{})
 }
 
-func New(items ...interface{}) (s *Set) {
+func NewSet(items ...interface{}) (s *Set) {
 	s = &Set{}
 	s.m = make(map[interface{}]struct{}, 0)
 	s.Add(items)
