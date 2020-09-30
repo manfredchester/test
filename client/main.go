@@ -12,15 +12,18 @@ import (
 
 func main() {
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 
 	defer cancel()
 
+	ctx = context.WithValue(ctx, "foo", "bar")
 	req, err := http.NewRequest(http.MethodGet, "http://localhost:1122", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	req = req.WithContext(ctx)
+
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Println(err)

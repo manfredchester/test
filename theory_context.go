@@ -4,9 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"log"
-	"math/rand"
-	"net/http"
 	"os"
 	"time"
 )
@@ -39,26 +36,6 @@ func std() {
 	}()
 	// time.AfterFunc(time.Second, cancel)
 	sleepAndtalk(ctx, 5*time.Second, "hello")
-}
-
-var reqID = 123
-
-func val(ctx context.Context, msg string) {
-	id, ok := ctx.Value(reqID).(int64)
-	if !ok {
-		log.Fatal("cloud not find requset ID")
-		return
-	}
-	log.Printf("[%d] %s", id, msg)
-}
-
-func decorate(f http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		id := rand.Int63()
-		ctx = context.WithValue(ctx, reqID, id)
-		f(w, r.WithContext(ctx))
-	}
 }
 
 func sleepAndtalk(ctx context.Context, t time.Duration, s string) {

@@ -1,6 +1,28 @@
 package main
 
+import "fmt"
+
+type TFunc func(int, int)
+
+func tt(f TFunc) TFunc {
+	fmt.Println("step1")
+	f(1, 2)
+	return func(a int, b int) {
+		fmt.Println(a, b)
+		fmt.Println("step2")
+		f(1, 2)
+	}
+}
+
+func Ttet(a, v int) {
+	a = 3
+	v = 4
+	fmt.Println(a, v)
+}
+
 func main() {
+	// a := tt(Ttet)
+	// a(5, 6)
 	theoryContext()
 	// theoryReturn()
 	// theoryRountine()
