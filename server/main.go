@@ -16,18 +16,18 @@ func handler(rsp http.ResponseWriter, req *http.Request) {
 	cxt := req.Context()
 	cxt = context.WithValue(cxt, int(11), int64(100))
 
-	Println(cxt, "handler started")
-	defer Println(cxt, "handler ended")
+	DecoPrint(cxt, "handler started")
+	defer DecoPrint(cxt, "handler ended")
 
 	fmt.Println(cxt.Value("foo"))
 
 	select {
 	case <-cxt.Done():
-		Println(cxt, "stop!!")
-		Println(cxt, cxt.Err().Error())
+		DecoPrint(cxt, "stop!!")
+		DecoPrint(cxt, cxt.Err().Error())
 		http.Error(rsp, cxt.Err().Error(), http.StatusInternalServerError)
 	case <-time.After(5 * time.Second):
-		Println(cxt, "hello!!")
+		DecoPrint(cxt, "hello!!")
 		fmt.Fprintln(rsp, "hahah")
 	}
 }

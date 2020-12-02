@@ -11,7 +11,7 @@ type key int
 
 const reqID = key(11)
 
-func Println(ctx context.Context, msg string) {
+func DecoPrint(ctx context.Context, msg string) {
 	id, ok := ctx.Value(reqID).(int64)
 	if !ok {
 		log.Fatal("cloud not find requset ID")

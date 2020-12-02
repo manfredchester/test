@@ -36,8 +36,6 @@ func main() {
 	// baseA()
 	// L1()
 	// GMP()
-	// zhlog.Error("traceID", "test():%v", test())
-	// zhlog.Trace("[ERROR]", test())
 	// f := Foo{
 	// 	I: implOfI{},
 	// 	J: implOfJ{},
