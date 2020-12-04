@@ -1,4 +1,6 @@
-package 
+package main
+
+import "fmt"
 
 func gotoloop() {
 	for i := 0; i < 10; i++ {
