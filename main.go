@@ -25,8 +25,8 @@ func Ttet(a, v int) {
 func main() {
 	// a := tt(Ttet)
 	// a(5, 6)
-	theoryContext()
-	// theoryReturn()
+	// theoryContext()
+	theoryReturn()
 	// theoryRountine()
 	// interSt()
 	// interIn()
