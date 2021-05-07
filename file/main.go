@@ -27,12 +27,12 @@ func main() {
 			lines := make([]byte, 1024)
 			// lines := new(T)
 			// lines.Tdemo = make([]byte, 0)
-			return lines
+			return &lines
 		},
 	}
 	stringPool := sync.Pool{New: func() interface{} {
-		lines := ""
-		return lines
+		lines := " stringPool "
+		return &lines
 	}}
 	// slicePool := sync.Pool{New: func() interface{} {
 	// 	lines := make([]string, 100)
@@ -41,11 +41,12 @@ func main() {
 
 	var wg sync.WaitGroup
 	for {
-		buf1 := linesPool.Get().([]byte)
-		n, err := r.Read(buf1)
-		fmt.Println("\n n:", n)
-		buf := buf1
+		buf1 := linesPool.Get().(*[]byte)
+		n, err := r.Read(*buf1)
+		fmt.Println("n:", n)
+		buf := *buf1
 		buf = buf[:n]
+		fmt.Println("buf:\n", string(buf))
 		if n == 0 {
 			if err == io.EOF {
 				break
@@ -75,13 +76,13 @@ func main() {
 func ProcessChunk(chunk []byte, linesPool *sync.Pool, stringPool *sync.Pool, start time.Time, end time.Time) {
 	//another wait group to process every chunk further
 	var wg2 sync.WaitGroup
-	logs := stringPool.Get().(string)
-	logs = string(chunk)
-	linesPool.Put(chunk) //put back the chunk in pool
+	// logs := stringPool.Get().(string)
+	logs := string(chunk)
+	linesPool.Put(&chunk) //put back the chunk in pool
 	//split the string by "\n", so that we have slice of logs
 	logsSlice := strings.Split(logs, "\n")
-	stringPool.Put(logs) //put back the string pool
-	chunkSize := 100     //process the bunch of 100 logs in thread
+	stringPool.Put(&logs) //put back the string pool
+	chunkSize := 100      //process the bunch of 100 logs in thread
 	n := len(logsSlice)
 	noOfThread := n / chunkSize
 	if n%chunkSize != 0 { //check for overflow
@@ -91,9 +92,7 @@ func ProcessChunk(chunk []byte, linesPool *sync.Pool, stringPool *sync.Pool, sta
 	//traverse the chunk
 	// wg2.Add(length / chunkSize)
 	for i := 0; i < length; i += chunkSize {
-		// if i != 0 {
 		wg2.Add(1)
-		// }
 		//process each chunk in saperate chunk
 		go func(s int, e int) {
 			defer wg2.Done()
@@ -120,7 +119,7 @@ func ProcessChunk(chunk []byte, linesPool *sync.Pool, stringPool *sync.Pool, sta
 		//passing the indexes for processing
 	}
 	wg2.Wait() //wait for a chunk to finish
-	// logsSlice = nil
+	logsSlice = nil
 }
 
 // 分段读取
