@@ -30,13 +30,10 @@ func main() {
 	}
 	time.Sleep(5 * time.Second)
 	// func1
-	// Go(func() { panic("错误失败") })
+	Go(func() { panic("错误失败") })
 	// func2
-	// Go(func() { panic("请求错误") })
-
-	str := "Golang梦工厂"
-	fmt.Println(len(str))
-	fmt.Println(len([]rune(str)))
+	Go(func() { panic("请求错误") })
+	time.Sleep(10 * time.Second)
 }
 
 func Go(fn func()) {

@@ -31,7 +31,7 @@ func f1() {
 	fmt.Println("f1 done")
 }
 
-func f22(i interface{}) {
+func f2(i interface{}) {
 	fmt.Println("f2 done", i)
 }
 
