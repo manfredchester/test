@@ -57,3 +57,18 @@ func Arr() {
 	fmt.Println("====================", newslice)
 	fmt.Println(sli2)
 }
+
+// 使用切片操作符切取切片时，上界是切片的容量，而非长度。
+func cap1() {
+	array := [10]uint32{1, 2, 3, 4, 5}
+	s1 := array[:5]
+
+	s2 := s1[5:10]
+
+	fmt.Println(s1)
+	fmt.Println(s2)
+
+	s1 = append(s1, 6)
+	fmt.Println(s1)
+	fmt.Println(s2)
+}
