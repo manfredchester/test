@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -22,4 +24,25 @@ func s(c rune) bool {
 		return false
 	}
 	return true
+}
+
+func main() {
+	jsonStr := `{"name":"tom","user_id":"999","age":"23"}`
+	var str string
+	m := make(map[string]interface{})
+	err := json.Unmarshal([]byte(jsonStr), &m)
+	fmt.Println(err)
+
+	v := reflect.ValueOf(m)
+	keys := v.MapKeys()
+	for _, k := range keys {
+		v1 := v.MapIndex(k).Interface().(string)
+		str += v1
+		fmt.Println(str)
+	}
+	// r := gjson.Parse(jsonStr)
+	// r.ForEach(func(key, value gjson.Result) bool {
+	// 	fmt.Println(key, value)
+	// 	return true
+	// })
 }
